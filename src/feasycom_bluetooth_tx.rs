@@ -3,11 +3,11 @@ use embassy_stm32::{
     usart::{self, Config, ConfigError, UartTx},
 };
 
-pub struct FseasycomBluetoothTx<'a> {
+pub struct FeasycomBluetoothTx<'a> {
     tx: UartTx<'a, peripherals::USART6, peripherals::DMA2_CH6>,
 }
 
-impl<'a> FseasycomBluetoothTx<'a> {
+impl<'a> FeasycomBluetoothTx<'a> {
     pub fn new(
         peri: peripherals::USART6,
         tx_pin: peripherals::PA11,

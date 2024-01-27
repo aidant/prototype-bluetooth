@@ -12,6 +12,6 @@ embassy-embedded-hal = { git = "https://github.com/embassy-rs/embassy", rev = "f
 embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "fb22b46ebb40c16e35c651c0dacf810126856927", version = "0.5.0", features = ["defmt", "arch-cortex-m", "executor-thread", "executor-interrupt", "integrated-timers"] }
 embassy-stm32 = { git = "https://github.com/embassy-rs/embassy", rev = "fb22b46ebb40c16e35c651c0dacf810126856927", version = "0.1.0", features = ["defmt", "chrono", "stm32f411ce", "time-driver-any"] }
 embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "fb22b46ebb40c16e35c651c0dacf810126856927", version = "0.3.0", features = ["defmt", "defmt-timestamp-uptime", "tick-hz-32_768"] }
-heapless = { version = "0.8.0", features = ["defmt-03"] }
+heapless = { version = "0.8.0", features = ["defmt-03"], git = "https://github.com/reitermarkus/heapless", rev = "7d96cd21e779edc4fa44033ec4e9c30f9021aa78" }
 panic-probe = { version = "0.3.1", features = ["print-defmt"] }
 static_cell = "2.0.0"
