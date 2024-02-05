@@ -8,10 +8,14 @@ cortex-m = { version = "0.7.7", features = ["inline-asm", "critical-section-sing
 cortex-m-rt = "0.7.3"
 defmt = "0.3.5"
 defmt-rtt = "0.4.0"
+display-interface-i2c = "0.5.0"
 embassy-embedded-hal = { git = "https://github.com/embassy-rs/embassy", rev = "fb22b46ebb40c16e35c651c0dacf810126856927", version = "0.1.0", features = ["defmt"] }
 embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "fb22b46ebb40c16e35c651c0dacf810126856927", version = "0.5.0", features = ["defmt", "arch-cortex-m", "executor-thread", "executor-interrupt", "integrated-timers"] }
 embassy-stm32 = { git = "https://github.com/embassy-rs/embassy", rev = "fb22b46ebb40c16e35c651c0dacf810126856927", version = "0.1.0", features = ["defmt", "chrono", "stm32f411ce", "time-driver-any"] }
+embassy-sync = { git = "https://github.com/embassy-rs/embassy", rev = "fb22b46ebb40c16e35c651c0dacf810126856927", version = "0.5.0", features = ["defmt"] }
 embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "fb22b46ebb40c16e35c651c0dacf810126856927", version = "0.3.0", features = ["defmt", "defmt-timestamp-uptime", "tick-hz-32_768"] }
-heapless = { version = "0.8.0", features = ["defmt-03"], git = "https://github.com/reitermarkus/heapless", rev = "7d96cd21e779edc4fa44033ec4e9c30f9021aa78" }
+embedded-alloc = "0.5.1"
+embedded-graphics = { version = "0.8.1", features = ["defmt"] }
+embedded-text = "0.7.0"
 panic-probe = { version = "0.3.1", features = ["print-defmt"] }
-static_cell = "2.0.0"
+ssd1306 = { git = "https://github.com/jamwaffles/ssd1306", rev = "0bae3a66238a7d5b1a404999dba4a2777489fd6a", version = "0.8.4" }

@@ -9,6 +9,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
+name = "az"
+version = "1.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7b7e4c2464d97fe331d41de9d5db0def0a96f4d823b8b32a2efd503578988973"
+
+[[package]]
 name = "bare-metal"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -43,13 +49,17 @@ dependencies = [
  "cortex-m-rt",
  "defmt",
  "defmt-rtt",
+ "display-interface-i2c",
  "embassy-embedded-hal",
  "embassy-executor",
  "embassy-stm32",
+ "embassy-sync",
  "embassy-time",
- "heapless 0.8.0 (git+https://github.com/reitermarkus/heapless?rev=7d96cd21e779edc4fa44033ec4e9c30f9021aa78)",
+ "embedded-alloc",
+ "embedded-graphics",
+ "embedded-text",
  "panic-probe",
- "static_cell",
+ "ssd1306",
 ]
 
 [[package]]
@@ -64,6 +74,12 @@ dependencies = [
  "nb 1.1.0",
  "vcell",
 ]
+
+[[package]]
+name = "byte-slice-cast"
+version = "1.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c3ac9f8b63eca6fd385229b3675f6cc0dc5c8a5c8a54a59d4f52ffd670d87b0c"
 
 [[package]]
 name = "byteorder"
@@ -203,6 +219,35 @@ dependencies = [
 ]
 
 [[package]]
+name = "display-interface"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7ba2aab1ef3793e6f7804162debb5ac5edb93b3d650fbcc5aeb72fcd0e6c03a0"
+
+[[package]]
+name = "display-interface-i2c"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0d964fa85bbbb5a6ecd06e58699407ac5dc3e3ad72dac0ab7e6b0d00a1cd262d"
+dependencies = [
+ "display-interface",
+ "embedded-hal 1.0.0",
+ "embedded-hal-async",
+]
+
+[[package]]
+name = "display-interface-spi"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f86b9ec30048b1955da2038fcc3c017f419ab21bb0001879d16c0a3749dc6b7a"
+dependencies = [
+ "byte-slice-cast",
+ "display-interface",
+ "embedded-hal 1.0.0",
+ "embedded-hal-async",
+]
+
+[[package]]
 name = "document-features"
 version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -328,7 +373,7 @@ dependencies = [
  "defmt",
  "embedded-io-async",
  "futures-util",
- "heapless 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "heapless",
 ]
 
 [[package]]
@@ -346,7 +391,7 @@ dependencies = [
  "embedded-hal 1.0.0",
  "embedded-hal-async",
  "futures-util",
- "heapless 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "heapless",
 ]
 
 [[package]]
@@ -367,6 +412,41 @@ name = "embassy-usb-driver"
 version = "0.1.0"
 source = "git+https://github.com/embassy-rs/embassy?rev=fb22b46ebb40c16e35c651c0dacf810126856927#fb22b46ebb40c16e35c651c0dacf810126856927"
 dependencies = [
+ "defmt",
+]
+
+[[package]]
+name = "embedded-alloc"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ddae17915accbac2cfbc64ea0ae6e3b330e6ea124ba108dada63646fd3c6f815"
+dependencies = [
+ "critical-section",
+ "linked_list_allocator",
+]
+
+[[package]]
+name = "embedded-graphics"
+version = "0.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0649998afacf6d575d126d83e68b78c0ab0e00ca2ac7e9b3db11b4cbe8274ef0"
+dependencies = [
+ "az",
+ "byteorder",
+ "defmt",
+ "embedded-graphics-core",
+ "float-cmp",
+ "micromath",
+]
+
+[[package]]
+name = "embedded-graphics-core"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ba9ecd261f991856250d2207f6d8376946cd9f412a2165d3b75bc87a0bc7a044"
+dependencies = [
+ "az",
+ "byteorder",
  "defmt",
 ]
 
@@ -437,6 +517,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1763775e2323b7d5f0aa6090657f5e21cfa02ede71f5dc40eead06d64dcd15cc"
 dependencies = [
  "embedded-storage",
+]
+
+[[package]]
+name = "embedded-text"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1f37bb00b903818f924c57ba71ecaff99824ac480b3ba47a93de219d861403ac"
+dependencies = [
+ "az",
+ "embedded-graphics",
+ "object-chain",
+]
+
+[[package]]
+name = "float-cmp"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "98de4bbd547a563b716d8dfa9aad1cb19bfab00f4fa09a6a4ed21dbcf44ce9c4"
+dependencies = [
+ "num-traits",
 ]
 
 [[package]]
@@ -538,26 +638,28 @@ dependencies = [
 ]
 
 [[package]]
-name = "heapless"
-version = "0.8.0"
-source = "git+https://github.com/reitermarkus/heapless?rev=7d96cd21e779edc4fa44033ec4e9c30f9021aa78#7d96cd21e779edc4fa44033ec4e9c30f9021aa78"
-dependencies = [
- "defmt",
- "hash32",
- "stable_deref_trait",
-]
-
-[[package]]
 name = "ident_case"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
 
 [[package]]
+name = "linked_list_allocator"
+version = "0.10.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9afa463f5405ee81cdb9cc2baf37e08ec7e4c8209442b5d72c04cfb2cd6e6286"
+
+[[package]]
 name = "litrs"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4ce301924b7887e9d637144fdade93f9dfff9b60981d4ac161db09720d39aa5"
+
+[[package]]
+name = "micromath"
+version = "2.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c3c8dda44ff03a2f238717214da50f65d5a53b45cd213a7370424ffdb6fae815"
 
 [[package]]
 name = "nb"
@@ -584,6 +686,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "object-chain"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "41af26158b0f5530f7b79955006c2727cd23d0d8e7c3109dc316db0a919784dd"
+
+[[package]]
 name = "panic-probe"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -604,12 +712,6 @@ name = "pin-utils"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
-
-[[package]]
-name = "portable-atomic"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7170ef9988bc169ba16dd36a7fa041e5c4cbeb6a35b76d4c03daded371eae7c0"
 
 [[package]]
 name = "proc-macro-error"
@@ -690,19 +792,23 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
 
 [[package]]
+name = "ssd1306"
+version = "0.8.4"
+source = "git+https://github.com/jamwaffles/ssd1306?rev=0bae3a66238a7d5b1a404999dba4a2777489fd6a#0bae3a66238a7d5b1a404999dba4a2777489fd6a"
+dependencies = [
+ "display-interface",
+ "display-interface-i2c",
+ "display-interface-spi",
+ "embedded-graphics-core",
+ "embedded-hal 1.0.0",
+ "embedded-hal-async",
+]
+
+[[package]]
 name = "stable_deref_trait"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
-
-[[package]]
-name = "static_cell"
-version = "2.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fa6ba4cf83bf80d3eb25f098ea5e790a0a1fcb5e357442259b231e412c2d3ca0"
-dependencies = [
- "portable-atomic",
-]
 
 [[package]]
 name = "stm32-fmc"
