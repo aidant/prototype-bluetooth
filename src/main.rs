@@ -1,6 +1,6 @@
 #![no_main]
 #![no_std]
-#![feature(byte_slice_trim_ascii, slice_split_once)]
+#![feature(byte_slice_trim_ascii, slice_split_once, concat_idents)]
 
 extern crate alloc;
 extern crate defmt_rtt;
@@ -9,11 +9,12 @@ extern crate panic_probe;
 mod app_state;
 mod feasycom_bluetooth;
 mod feasycom_protocol;
+mod feasycom_task;
 mod piicodev_oled;
 
 use embassy_executor::Spawner;
 use embedded_alloc::Heap;
-use feasycom_bluetooth::feasycom_bluetooth;
+use feasycom_task::feasycom_task;
 
 #[global_allocator]
 static HEAP: Heap = Heap::empty();
@@ -30,7 +31,7 @@ async fn main(spawner: Spawner) {
     let p = embassy_stm32::init(Default::default());
 
     spawner
-        .spawn(feasycom_bluetooth(
+        .spawn(feasycom_task(
             p.USART6, p.PA11, p.DMA2_CH6, p.USART1, p.PB7, p.DMA2_CH2,
         ))
         .unwrap();

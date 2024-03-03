@@ -6,8 +6,6 @@ use embassy_stm32::{
     usart::{self, Config, ConfigError, RingBufferedUartRx, UartRx, UartTx},
 };
 
-use crate::feasycom_protocol::Indication;
-
 bind_interrupts!(struct Irqs {
     USART1 => usart::InterruptHandler<peripherals::USART1>;
 });
@@ -76,43 +74,5 @@ impl<'a> FeasycomBluetoothRx<'a> {
             let len = self.rx.read(&mut self.buf).await?;
             self.msg.extend(self.buf.iter().take(len));
         }
-    }
-}
-
-#[embassy_executor::task]
-pub async fn feasycom_bluetooth(
-    tx_peri: peripherals::USART6,
-    tx_pin: peripherals::PA11,
-    tx_dma: peripherals::DMA2_CH6,
-    rx_peri: peripherals::USART1,
-    rx_pin: peripherals::PB7,
-    rx_dma: peripherals::DMA2_CH2,
-) -> ! {
-    let mut feasycom_bluetooth_tx = FeasycomBluetoothTx::new(tx_peri, tx_pin, tx_dma).unwrap();
-    let mut feasycom_bluetooth_rx = FeasycomBluetoothRx::new(rx_peri, rx_pin, rx_dma).unwrap();
-
-    feasycom_bluetooth_tx
-        .write(b"AT+AVRCPCFG=3\r\n")
-        .await
-        .unwrap();
-
-    loop {
-        let msg = match feasycom_bluetooth_rx.read().await {
-            Ok(msg) => msg,
-            Err(e) => {
-                error!("{}", e);
-                continue;
-            }
-        };
-
-        let indication = match Indication::try_from(msg) {
-            Ok(indication) => indication,
-            Err(e) => {
-                error!("{}", defmt::Debug2Format(&e));
-                continue;
-            }
-        };
-
-        info!("{}", indication);
     }
 }

@@ -3,24 +3,6 @@ name = "bluetooth"
 version = "0.1.0"
 edition = "2021"
 
-[features]
-default = ["audio", "serial"]
-audio = ["a2dpstat", "a2dpdev", "avrcpstat", "playstat", "trackstat", "trackinfo"]
-a2dpstat = []
-a2dpdev = []
-avrcpstat = []
-playstat = []
-trackstat = []
-trackinfo = []
-serial = ["sppstat", "gattstat", "sppdev", "gattdev", "sppdata", "gattdata"]
-sppstat = []
-gattstat = []
-sppdev = []
-gattdev = []
-sppdata = []
-gattdata = []
-
-
 [dependencies]
 anyhow = { version = "1.0.79", default-features = false }
 cortex-m = { version = "0.7.7", features = ["inline-asm", "critical-section-single-core"] }
