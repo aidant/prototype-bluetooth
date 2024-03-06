@@ -3,7 +3,7 @@ use alloc::{
     vec::Vec,
 };
 use core::{
-    fmt::{Debug, Display},
+    fmt::{self, Debug, Display},
     num::ParseIntError,
     str::{self, Utf8Error},
 };
@@ -13,7 +13,7 @@ use defmt::Format;
 pub struct InvalidVariantError(String, Vec<u8>);
 
 impl Display for InvalidVariantError {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, r#"+{} invalid variant "{:?}""#, self.0, self.1)
     }
 }
@@ -34,7 +34,7 @@ macro_rules! define_error {
         )+
 
         impl Display for Error {
-            fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
                 match self {
                     $(Self::$name(error) => Display::fmt(error, f)),+
                 }

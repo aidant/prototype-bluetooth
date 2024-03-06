@@ -1,10 +1,10 @@
+use alloc::{string::ToString, vec::Vec};
 use defmt::{error, info};
 use embassy_stm32::peripherals;
 
 use crate::{
     feasycom_bluetooth::{FeasycomBluetoothRx, FeasycomBluetoothTx},
-    feasycom_protocol::command::Command,
-    feasycom_protocol::indication::Indication,
+    feasycom_protocol::{command, indication::Indication},
 };
 
 enum FeasycomState {}
@@ -25,6 +25,28 @@ pub async fn feasycom_task(
 
     feasycom_bluetooth_tx
         .write(b"AT+AVRCPCFG=3\r\n")
+        .await
+        .unwrap();
+    feasycom_bluetooth_tx
+        .write(command::Ver::new().as_bytes())
+        .await
+        .unwrap();
+    feasycom_bluetooth_tx
+        .write(
+            command::Name::new()
+                .name("Audio Pocket")
+                .enable_suffix(false)
+                .as_bytes(),
+        )
+        .await
+        .unwrap();
+    feasycom_bluetooth_tx
+        .write(
+            command::LeName::new()
+                .le_name("Audio Pocket LE")
+                .enable_suffix(false)
+                .as_bytes(),
+        )
         .await
         .unwrap();
 

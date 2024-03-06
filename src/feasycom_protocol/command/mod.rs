@@ -1,166 +1,143 @@
-use alloc::vec::Vec;
+use alloc::string::{String, ToString};
+use core::fmt::{self, Display};
 use defmt::Format;
 
-mod macros {
-    macro_rules! define_bytes {
-        ($($mod:ident => $bytes:literal,)*) => {
-            $(mod $mod {
-                use alloc::vec::Vec;
+macro_rules! command {
+    ($($type:ident => $command:literal),+ $(,)?) => {
+        $(
 
-                pub fn stringify() -> Vec<u8> {
-                    $bytes.to_vec()
+            #[derive(Debug, Eq, PartialEq, Clone, Format)]
+            pub struct $type<const STATE: u8 = 0> {
+                str: String,
+            }
+
+            impl $type<0> {
+                pub fn new() -> $type<1> {
+                    $type {
+                        str: $command.to_string(),
+                    }
                 }
-            })*
-        };
-    }
+            }
 
-    pub(super) use define_bytes;
-    pub(super) use define_commands;
+            impl<const STATE: u8> $type<STATE> {
+                pub fn as_bytes(&mut self) -> &[u8] {
+                    self.str.push_str("\r\n");
+                    &self.str.as_bytes()
+                }
+            }
+
+            impl<const STATE: u8> Display for $type<STATE> {
+                fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                    write!(f, "{}", self.str)
+                }
+            }
+        )+
+    };
 }
 
-macros::define_bytes!(
-    ver => b"AT+VER",
-    addr => b"AT+ADDR",
-    stat => b"AT+STAT",
-    dsca => b"AT+DSCA",
-    reboot => b"AT+REBOOT",
-    restore => b"AT+RESTORE",
-    closeat => b"AT+CLOSEAT",
-    a2dpstat => b"AT+A2DPSTAT",
-    a2dpdisc => b"AT+A2DPDISC",
-    a2dpdec => b"AT+A2DPDEC",
-    playpause => b"AT+PLAYPAUSE",
-    play => b"AT+PLAY",
-    pause => b"AT+PAUSE",
-    stop => b"AT+STOP",
-    forward => b"AT+FORWARD",
-    backward => b"AT+BACKWARD",
-    sppstat => b"AT+SPPSTAT",
-    sppdisc => b"AT+SPPDISC",
-    gattstat => b"AT+GATTSTAT",
-    gattdisc => b"AT+GATTDISC",
+command!(
+    Ver => "AT+VER",
+    Addr => "AT+ADDR",
+    LeAddr => "AT+LEADDR",
+    Name => "AT+NAME",
+    LeName => "AT+NAME",
+    LeCfg => "AT+LECFG",
+    Baud => "AT+BAUD",
+    // UARTCFG
+    // PIN
+    // SSP
+    // COD
+    // PLIST
+    // TPMODE
+    Stat => "AT+STAT",
+    // AUTOCONN
+    // SCAN
+    // INQCFG
+    // SPKVOL
+    // I2SCFG
+    // SPDIFCFG
+    Dsca => "AT+DSCA",
+    Reboot => "AT+REBOOT",
+    Restore => "AT+RESTORE",
+    CloseAt => "AT+CLOSEAT",
+    // BTEN
+    // PAIR
+    HfpStat => "AT+HFPSTAT",
+    // HFPCONN
+    HfpDisc => "AT+HFPDISC",
+    // HFPDIAL
+    // HFPDTMF
+    HfpAnsw => "AT+HFPANSW",
+    HfpChup => "AT+HFPCHUP",
+    // HFPADTS
+    // MUTEMIC
+    A2dpStat => "AT+A2DPSTAT",
+    // A2DPROLE
+    // A2DPCONN
+    A2dpDisc => "AT+A2DPDISC",
+    A2dpDec => "AT+A2DPDEC",
+    // AVRCPCFG
+    Playpause => "AT+PLAYPAUSE",
+    Play => "AT+PLAY",
+    Pause => "AT+PAUSE",
+    Stop => "AT+STOP",
+    Forward => "AT+FORWARD",
+    Backward => "AT+BACKWARD",
+    // PBDOWN
+    SppStat => "AT+SPPSTAT",
+    // SPPCONN
+    SppDisc => "AT+SPPDISC",
+    // SPPSEND
+    GattStat => "AT+GATTSTAT",
+    GattDisc => "AT+GATTDISC",
+    // GATTSEND
 );
 
-macro_rules! commands {
-	($($type:ident$(($params:tt))?),+ $(,)?) => {
-		#[derive(Debug, Eq, PartialEq, Clone, Format)]
-		pub enum Command {
-		  Test,
+macro_rules! command_param_str {
+    ($type:ident, $from:literal -> $to:literal, $separator:literal, $name:ident) => {
+        impl $type<$from> {
+            pub fn $name(mut self, $name: &str) -> $type<$to> {
+                self.str.push($separator);
+                self.str.push_str($name);
 
-		  $($type$(($params))?,)*
-		}
-
-		impl Into<Vec<u8>> for Command {
-			fn into(self) -> Vec<u8> {
-				match self {
-					Self::Test => b"AT".to_vec(),
-
-					$(Self::$type$(($params))? => $type::try_from($($params)?),)*
-				}
-			}
-		}
-	};
+                unsafe { core::mem::transmute(self) }
+            }
+        }
+    };
 }
 
-commands!(
-    Ver,
-    Addr,
-    LeAddr,
-    Name((name, enable_suffix)),
-    LeName,
-    LeCfg,
-    Baud,
-    UartCfg,
-    Pin,
-    Ssp,
-    Cod,
-    Plist,
-    TpMode,
-    Stat,
-    AutoConn,
-    Scan,
-    InqCfg,
-    SpkVol,
-    I2sCfg,
-    SpdifCfg,
-    Dsca,
-    Reboot,
-    Restore,
-    CloseAt,
-    BtEn,
-    Pair,
-    A2dpStat,
-    A2dpRole,
-    A2dpConn,
-    A2dpDisc,
-    A2dpDec,
-    AvrcpCfg,
-    PlayPause,
-    Play,
-    Pause,
-    Stop,
-    Forward,
-    Backward,
-    SppStat,
-    SppConn,
-    SppDisc,
-    SppSend,
-    GattStat,
-    GattDisc,
-    GattSend,
-);
+macro_rules! command_param_bool {
+    ($type:ident, $from:literal -> $to:literal, $separator:literal, $name:ident) => {
+        impl $type<$from> {
+            pub fn $name(mut self, $name: bool) -> $type<$to> {
+                self.str.push($separator);
+                self.str.push(if $name { '1' } else { '0' });
 
-// #[derive(Debug, Eq, PartialEq, Clone, Format)]
-// pub enum Command {
-//     Test,
+                unsafe { core::mem::transmute(self) }
+            }
+        }
+    };
+}
 
-//     Ver,
-//     Addr,
-//     LeAddr,
-//     Name,    // TODO params String Boolean
-//     LeName,  // TODO params String Boolean
-//     LeCfg,   // TODO params Boolean
-//     Baud,    // TODO params Baudrate
-//     UartCfg, // TODO params Boolean
-//     Pin,     // TODO params String
-//     Ssp,     // TODO params Boolean
-//     Cod,     // TODO params String
-//     Plist,   // TODO params Custom
-//     TpMode,  // TODO params Boolean
-//     Stat,
-//     AutoConn, // TODO params Custom
-//     Scan,     // TODO params Boolean
-//     InqCfg,   // TODO params Boolean
-//     SpkVol,   // TODO params Custom
-//     I2sCfg,   // TODO params Custom
-//     SpdifCfg, // TODO params Custom
-//     Dsca,
-//     Reboot,
-//     Restore,
-//     CloseAt,
-//     BtEn, // TODO params Boolean
-//     Pair, // TODO params Boolean
+macro_rules! command_param_number {
+    ($type:ident, $from:literal -> $to:literal, $separator:literal, $name:ident, $size:ty) => {
+        impl $type<$from> {
+            pub fn $name(mut self, $name: $size) -> $type<$to> {
+                self.str.push($separator);
+                self.str.push_str($name.to_string().as_str());
 
-//     A2dpStat,
-//     A2dpRole, // TODO params Boolean
-//     A2dpConn, // TODO params String
-//     A2dpDisc,
-//     A2dpDec,
-//     AvrcpCfg, // TODO params Custom
-//     PlayPause,
-//     Play,
-//     Pause,
-//     Stop,
-//     Forward,
-//     Backward,
+                unsafe { core::mem::transmute(self) }
+            }
+        }
+    };
+}
 
-//     SppStat,
-//     SppConn, // TODO params String
-//     SppDisc,
-//     SppSend, // TODO params usize String
+command_param_str!(Name, 1 -> 2, '=', name);
+command_param_bool!(Name, 2 -> 3, ',', enable_suffix);
 
-//     GattStat,
-//     // does GattConn exist?
-//     GattDisc,
-//     GattSend, // TODO params usize String
-// }
+command_param_str!(LeName, 1 -> 2, '=', le_name);
+command_param_bool!(LeName, 2 -> 3, ',', enable_suffix);
+
+command_param_bool!(LeCfg, 1 -> 2, '=', enable_random_address);
+
+command_param_number!(Baud, 1 -> 2, '=', baudrate, u32);

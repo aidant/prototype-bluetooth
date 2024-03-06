@@ -1,6 +1,6 @@
 #![no_main]
 #![no_std]
-#![feature(byte_slice_trim_ascii, slice_split_once, concat_idents)]
+#![feature(byte_slice_trim_ascii, slice_split_once)]
 
 extern crate alloc;
 extern crate defmt_rtt;
