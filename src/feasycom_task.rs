@@ -24,13 +24,10 @@ pub async fn feasycom_task(
     let mut feasycom_bluetooth_rx = FeasycomBluetoothRx::new(rx_peri, rx_pin, rx_dma).unwrap();
 
     feasycom_bluetooth_tx
-        .write(b"AT+AVRCPCFG=3\r\n")
-        .await
-        .unwrap();
-    feasycom_bluetooth_tx
         .write(command::Ver::new().as_bytes())
         .await
         .unwrap();
+
     feasycom_bluetooth_tx
         .write(
             command::Name::new()
@@ -40,6 +37,7 @@ pub async fn feasycom_task(
         )
         .await
         .unwrap();
+
     feasycom_bluetooth_tx
         .write(
             command::LeName::new()
